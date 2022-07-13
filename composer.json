@@ -1,0 +1,15 @@
+{
+    "name": "armin/simple_mvc_model",
+    "autoload": {
+        "psr-4": {
+            "app\\": "./"
+        }
+    },
+    "authors": [{
+        "name": "armin",
+        "email": "genius2001armin@gmail.com"
+    }],
+    "require": {
+        "vlucas/phpdotenv": "^5.4"
+    }
+}
