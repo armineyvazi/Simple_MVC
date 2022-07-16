@@ -9,13 +9,11 @@ class m002_initial
 
                 id INT AUTO_INCREMENT PRIMARY KEY,
 
-                tittle VARCHAR(255) NOT NULL,
+                title VARCHAR(255) NOT NULL,
 
-                description VARCHAR(255) NOT NULL, 
+                body VARCHAR(255) NOT NULL, 
                 
                 deleted BOOLEAN DEFAULT 0,
-
-                status TINYINT DEFAULT 0,
 
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
