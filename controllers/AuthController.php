@@ -27,11 +27,8 @@ class AuthController extends Controller{
        
         if($request->isPost())
         { 
-            
             $user->loadData($request->getBody());
-           dd($request->getBody());
-           
-
+    
             if($user->validate() && $user->save()){
 
              

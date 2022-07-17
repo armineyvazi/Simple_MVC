@@ -113,5 +113,70 @@ class Database
     protected function log($message){
         echo '['.date('Y-m-d H:i:s').'] - '.$message.PHP_EOL;
     }
+    public function page()
+    {
+       
+        $page=isset($_GET['page']) ? (int)($_GET['page']):1;
+        $perPage=isset($_GET['per-page']) || $_GET['per-page']<=50 ?(int)($_GET['per-page']):5;
+
+        $start=($page > 1 ) ? ($page*$perPage) - $perPage : 0 ;
+        $article=$this->pdo->prepare("
+                SELECT SQL_CALC_FOUND_ROWS id,title,body
+                FROM posts
+                LIMIT {$start},{$perPage}
+        
+        
+        ");
+        $article->execute();
+        $article=$article->fetchAll(\PDO::FETCH_ASSOC);
+        $total=$this->pdo->query("SELECT FOUND_ROWS()")->fetch();
+        ;
+        $page=ceil($total[0]/$perPage);
+        $article['page']=$page;
+        $article['per-page']=$perPage;
+
+        return $article;
+    }
+ 
+    public function find($id)
+    {
+        $string=$this->pdo->prepare("SELECT * FROM posts WHERE  id = ?");
+        
+        $string->execute(array($id));
+
+        $string=$string->fetchAll(\PDO::FETCH_ASSOC);
+
+       
+        return $string;
+    }
+    public function update($id,$title,$body)
+    {
+        $string="UPDATE posts SET title = :title, body = :body WHERE id = :id";
+        $stmt=$this->pdo->prepare($string);
+        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+        $stmt->bindParam(':body', $body, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $data=$stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $data;
+    }
+    public function search($text)
+    {
+        $text=htmlspecialchars($text);
+        $get_name =$this->pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$text%'");
+        $get_name->execute();
+        $get_name=$get_name->fetch(\PDO::FETCH_ASSOC);
     
+       return $get_name;
+	
+    }
+    public function delete($id)
+    {
+        $sql = "DELETE FROM posts WHERE id=?";
+        $stmt= $this->pdo->prepare($sql);
+        $stmt->execute([$id]);
+    }
+
+  
 }

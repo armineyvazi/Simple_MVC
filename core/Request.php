@@ -13,7 +13,7 @@ class Request
             return $path;
         }
        
-           return substr($path, 0, $position);
+           return substr($path,0, $position);
     }
 
     public function method()

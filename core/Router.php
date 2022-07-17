@@ -43,7 +43,7 @@ class Router
           
         
             $this->response->setStatusCode(404);
-
+          
             return $this->renderOnlyView('404'); 
             
            

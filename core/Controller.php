@@ -15,6 +15,12 @@ class Controller{
     {
         $this->layout=$layout;
     }
+    public function redirect(string $url)
+    {
+        header('Location: '.$url);
+    }
+
+    
 
 
 

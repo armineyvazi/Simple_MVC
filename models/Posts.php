@@ -68,7 +68,7 @@ class Posts extends DbModel
 
         $statement->execute();
     }
-
+   
 
 
 }
