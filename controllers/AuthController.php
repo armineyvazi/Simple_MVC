@@ -10,41 +10,40 @@ use app\core\Request;
 
 use app\models\User;
 
-class AuthController extends Controller{
-
+class AuthController
+{
+    /**
+     * @param mixed view
+     *
+     */
     public function login()
     {
-        $this->setLayout('auth');
-      
-        return $this->render('login');
-
+        return views('access.login');
     }
+    /**
+     *
+     * @param mixed views
+     *
+     * @return array
+     *
+     */
     public function register(Request $request)
     {
-        
-   
         $user=new User;
-       
         if($request->isPost())
-        { 
+        {
             $user->loadData($request->getBody());
-    
-            if($user->validate() && $user->save()){
 
-             
+            if($user->validate() && $user->save()){
                 return "Success";
             }
-          
 
-            return $this->render('register',[
-
+            return views('access.register',[
                 'model'=>$user
             ]);
         }
 
-        $this->setLayout('main');
-
-        return $this->render('register',['model'=>$user]);
+        return views('access.register',['model'=>$user]);
     }
-    
+
 }

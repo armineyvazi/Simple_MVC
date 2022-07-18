@@ -24,10 +24,9 @@ $config = [
 $app = new Application(dirname(__DIR__), $config);
 
 $app->router->get('/', [SiteController::class, 'home']);
-$app->router->get('/search', [SiteController::class, 'search']);
+
 
 $app->router->get('/contact', [SiteController::class, 'contact']);
-$app->router->post('/contact', [SiteController::class, 'handeContact']);
 /**
  * route login
  */
@@ -39,9 +38,9 @@ $app->router->post('/login', [AuthController::class, 'login']);
 $app->router->get('/register', [AuthController::class, 'register']);
 $app->router->post('/register', [AuthController::class, 'register']);
 /**
- * 
+ *
  * route posts
- * 
+ *
  */
 $app->router->get('/addposts',[PostsController::class,'create']);
 $app->router->post('/addposts',[PostsController::class,'store']);
@@ -58,5 +57,7 @@ $app->router->post('/posts/update',[PostsController::class,'update']);
  * route post for delet
  */
 $app->router->get('/posts/delete',[PostsController::class,'delete']);
+$app->router->post('/search', [PostsController::class, 'search']);
+
 
 $app->run();

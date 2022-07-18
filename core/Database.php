@@ -17,7 +17,7 @@ class Database
 
         $this->pdo=new PDO($dsn,$user,$password);
 
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);    
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
     }
 
     public function applyMigrations(){
@@ -30,25 +30,25 @@ class Database
 
         $files=scandir(Application::$ROOT_DIR.'/migrations');
 
-      
+
 
         $toApplyMigrations=array_diff($files,$appliedMigrations);
-        
-       
+
+
         foreach($toApplyMigrations as $migration) {
-            
+
             if($migration==='.' || $migration==='..'){
-                
+
                 continue;
             }
-            
-     
-         
+
+
+
         require_once  Application::$ROOT_DIR.'/migrations/'.$migration;
 
         $className=pathinfo($migration,PATHINFO_FILENAME);
 
-        
+
         $instance= new $className();
 
         $this->log("Applyin migration $migration");
@@ -58,18 +58,18 @@ class Database
         $this->log("Applied migration $migration");
 
         $newMigrations[]=$migration;
-            
+
         }
-       
+
         if(!empty($newMigrations)){
 
             $this->saveMigrations($newMigrations);
         }
         else{
-                
+
             $this->log('All migrations  are applied');
         }
-        
+
 
     }
     public function createMigrationsTable(){
@@ -80,10 +80,10 @@ class Database
 
             migration VARCHAR(255),
 
-            create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
-        
-        
-        
+            create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+
+
          )ENGINE=INNODB;");
     }
     public function getAppliedMigrations(){
@@ -99,23 +99,23 @@ class Database
 
         $str=implode(",",array_map(fn($m)=>"('$m')",$migrations));
 
-      
+
 
         $statment=$this->pdo->prepare("INSERT INTO migrations (migration) VALUES
 
             $str
-        
+
         ");
-         
+
         $statment->execute();
     }
 
     protected function log($message){
         echo '['.date('Y-m-d H:i:s').'] - '.$message.PHP_EOL;
     }
-    public function page()
+    public function paginate()
     {
-       
+
         $page=isset($_GET['page']) ? (int)($_GET['page']):1;
         $perPage=isset($_GET['per-page']) || $_GET['per-page']<=50 ?(int)($_GET['per-page']):5;
 
@@ -124,8 +124,8 @@ class Database
                 SELECT SQL_CALC_FOUND_ROWS id,title,body
                 FROM posts
                 LIMIT {$start},{$perPage}
-        
-        
+
+
         ");
         $article->execute();
         $article=$article->fetchAll(\PDO::FETCH_ASSOC);
@@ -137,16 +137,16 @@ class Database
 
         return $article;
     }
- 
+
     public function find($id)
     {
         $string=$this->pdo->prepare("SELECT * FROM posts WHERE  id = ?");
-        
+
         $string->execute(array($id));
 
         $string=$string->fetchAll(\PDO::FETCH_ASSOC);
 
-       
+
         return $string;
     }
     public function update($id,$title,$body)
@@ -164,12 +164,12 @@ class Database
     public function search($text)
     {
         $text=htmlspecialchars($text);
-        $get_name =$this->pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$text%'");
+        $get_name =$this->pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$text%' OR body LIKE '%$text%'");
         $get_name->execute();
         $get_name=$get_name->fetch(\PDO::FETCH_ASSOC);
-    
+
        return $get_name;
-	
+
     }
     public function delete($id)
     {
@@ -178,5 +178,5 @@ class Database
         $stmt->execute([$id]);
     }
 
-  
+
 }

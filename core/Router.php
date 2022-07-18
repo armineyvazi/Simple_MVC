@@ -8,7 +8,6 @@ class Router
     protected array $routes = [];
     public Response $response;
     public Request $request;
-
     /**
      * Router constructor
      * @param Response $response
@@ -20,85 +19,48 @@ class Router
         $this->request = $request;
         $this->response = $response;
     }
-
-    public function get($path, $callback)
+    /**
+     *
+     * @param void
+     *
+     */
+    public function get($path, $callback):void
     {
-
         $this->routes['get'][$path] = $callback;
     }
     public function post($path, $callback)
     {
-
         $this->routes['post'][$path] = $callback;
     }
-
-    public function resolve()
+    /**
+     * @param string $path info
+     *
+     * @return mixed
+     */
+    public function resolve():mixed
     {
         $path = $this->request->getPath();
         $method = $this->request->method();
-
         $callback = $this->routes[$method][$path] ?? false;
 
-        if ($callback === false) {
-          
-        
+        if ($callback === false)
+        {
+
             $this->response->setStatusCode(404);
-          
-            return $this->renderOnlyView('404'); 
-            
-           
-            
+            return views('error.404');
+
         }
         if (is_string(($callback))) {
 
-            return $this->renderView($callback);
+            return views($callback);
 
-        } elseif (is_array($callback)) {
-
-            Application::$app->controller = new $callback[0];
-            
-            $callback[0]= Application::$app->controller;
         }
+        elseif (is_array($callback))
+        {
+           $callback[0] = new $callback[0];
+        }
+
         return  call_user_func($callback,$this->request);
     }
 
-    public function renderView($view,$params=[])
-    {
-        $layoutContent = $this->layoutContent();
-
-        $viewContact = $this->renderOnlyView($view,$params);
-
-        return str_replace('{{content}}', $viewContact, $layoutContent);
-    }
-
-
-    public function renderContent($viewContent)
-    {
-        $layoutContent = $this->layoutContent();
-        return str_replace('{{content}}', $viewContent, $layoutContent);
-    }
-    protected function layoutContent()
-    {
-       $layout=Application::$app->controller->layout;
-
-        ob_start();
-
-        include_once Application::$ROOT_DIR . "/views/layouts/$layout.php";
-        
-        return ob_get_clean();
-    }
-    protected function renderOnlyView($view,$params=null)
-    {
-
-        foreach($params as $key=>$value)
-        {
-        
-            $$key=$value;
-        }
-      
-        ob_start();
-        include_once Application::$ROOT_DIR . "/views/$view.php";
-        return ob_get_clean();
-    }
-  
 }

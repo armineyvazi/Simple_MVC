@@ -4,94 +4,136 @@
 
 namespace app\controllers;
 
+use app\core\service\PostsService;
 use App\core\Application;
-
-use app\core\Controller;
-use app\core\Database;
 use app\core\Request;
 use app\models\Posts;
 use PDO;
 
-class PostsController extends Controller
+
+class PostsController
 {
     /**
-     * Undocumented function
+     * @var app\models\PostsService
+     *
+     */
+    protected $post_Service;
+    /**
+     * @var __construct post_Service
      *
      * @return void
+     */
+    public function __construct()
+    {
+        $this->post_Service=new PostsService;
+    }
+    /**
+     *
+     * @param mixed views
+     *
+     * @return array
      */
     public function index()
     {
-        $data=Application::$app->db->page();
-        $this->setLayout('main');
-        return $this->render('posts',compact('data'));
+        $data=Application::$app->db->paginate();
+        return views('posts.posts',compact('data'));
     }
      /**
-     * 
-     * @return void
+     * @param mixed views
      */
     public function create()
     {
-        $this->setLayout('main');
-        return $this->render('addpost');
+        return views('posts.addpost');
     }
     /**
-     * 
+     *
+     * stores the post in the database
      *
      * @param Request $request
+     *
      * @return void
+     *
      */
     public function store(Request $request)
     {
         $post=new Posts;
         $post->loadData($request->getBody());
-       
+
         if($post->validate() and $post->create())
         {
             Application::$app->session->setSession('success','your posts is add succsess fully');
-            
 
-            return $this->render('addpost');
+            return views('posts.addpost');
         }
-        // $this->setLayout('main');
-
-        return $this->render('addpost',['model'=>$post]);
-        
+        return views('posts.addpost',['model'=>$post]);
     }
-
+    /**
+     *
+     * Edit posts from the Database.
+     *
+     * @param Request $request
+     *
+     */
     public function edit(Request $request)
     {
         $id=$request->getBody();
-        $id=array_keys($id);
-    
-        $data=Application::$app->db->find((int)$id[0]);
 
-       return $this->render('editposts',compact('data'));
-      
+        $data=$this->post_Service->edit($id);
+
+        return views('posts.editposts',compact('data'));
+
     }
+    /**
+     *
+     * Update posts from the Database.
+     *
+     * @param Request $request
+     *
+     * @return void
+     *
+     */
     public function update(Request $request)
     {
         $data=$request->getBody();
-        $id=(int)$data['id'];
-        $title=$data['title'];
-        $body=$data['body'];
 
-        Application::$app->db->update($id,$title,$body);
+        $this->post_Service->update($data);
 
-        return $this->redirect("/posts?page=1&per-page=3");
-
+        return redirect("/posts?page=1&per-page=3");
     }
-
+    /**
+     *
+     * Delete posts from the Database.
+     *
+     * @param Request $request
+     *
+     * @return void
+     *
+     */
     public function delete(Request $request)
     {
         $id=$request->getBody();
-        $id=array_keys($id);
 
-        Application::$app->db->delete($id[0]);
-       
-        return $this->redirect("/posts?page=1&per-page=3");
+        $this->post_Service->delete($id);
+
+        return redirect("/posts?page=1&per-page=3");
 
     }
-   
+    /**
+     *
+     * @param mixed views
+     *
+     * @return array
+     *
+     */
+    public function search(Request $request)
+    {
+        $text=$request->getBody()['name'];
+
+        $ajax=$this->post_Service->search($text);
+
+        return views('posts.posts',compact('ajax'));
+    }
+
 
 
 

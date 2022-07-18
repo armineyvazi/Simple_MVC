@@ -15,8 +15,8 @@ abstract  class DbModel extends Model
     {
         $tableName=$this->tableName();
         $attribute=$this->attribute();
-     
-        $params=array_map(fn($atrr)=>":$atrr",$attribute); 
+
+        $params=array_map(fn($atrr)=>":$atrr",$attribute);
         $statement=self::prepare("INSERT INTO $tableName(".implode(',',$attribute).") VALUES (".implode(',',$params).")");
 
         foreach($attribute as $attribute)
@@ -27,7 +27,7 @@ abstract  class DbModel extends Model
         }
 
         $statement->execute();
-    
+
     }
     public function findOne($where)
     {
@@ -42,11 +42,11 @@ abstract  class DbModel extends Model
         $statement->execute();
 
         return  $statement->fetchObject();
-    } 
+    }
 
     public static function prepare($sql)
     {
        return Application::$app->db->pdo->prepare($sql);
     }
-    
+
 }

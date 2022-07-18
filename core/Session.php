@@ -11,7 +11,7 @@ class Session
     public function __construct()
     {
         session_start();
-        
+
     }
     /**
      * Undocumented function
@@ -28,25 +28,25 @@ class Session
      * Undocumented function
      *
      * @param [type] $key
-     * @return void
+     *
+     * @return array|false
      */
     public function getSession($key)
     {
         return $_SESSION[$key] ?? false;
-       
+
     }
     /**
-     * 
-     *
      * @param [type] $key
+     *
      * @return void
      */
     public function delete($key)
     {
        unset($_SESSION[$key]);
     }
-    
-    
+
+
 }
 
 
